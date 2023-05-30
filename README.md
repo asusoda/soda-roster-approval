@@ -23,3 +23,10 @@ sudo mv chromedriver /usr/local/bin
 # Make it executable
 sudo chmod +x /usr/local/bin/chromedriver
 ```
+
+You can optionally put your login credentials in a .env file in the same directory as the script:
+```bash
+username=bgood
+password=P@s5w0rd
+```
+Obviously, don't do this on a machine other people might have access to.
