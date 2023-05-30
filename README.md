@@ -1,4 +1,7 @@
-# Dependencies
+# SoDA Roster Approval Script
+Selenium script that runs headless (no GUI environment required). Auto-accepts prospective members on SoDA's SunDevilSync (Campus Labs Engage) Organization
+
+## Dependencies
 - [selenium](https://pypi.org/project/selenium/)
 - [python-dotenv](https://pypi.org/project/python-dotenv/)
 - [ChromeDriver](https://chromedriver.chromium.org/downloads) 
