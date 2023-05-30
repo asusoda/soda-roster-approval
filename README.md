@@ -1,5 +1,6 @@
 # SoDA Roster Approval Script
-Selenium script that runs headless (no GUI environment required). Auto-accepts prospective members on SoDA's SunDevilSync (Campus Labs Engage) Organization
+Selenium script that runs headless (no GUI environment required).
+Auto-accepts prospective members on SoDA's SunDevilSync (Campus Labs Engage) Organization.
 
 ## Dependencies
 - [selenium](https://pypi.org/project/selenium/)
@@ -11,10 +12,11 @@ Selenium script that runs headless (no GUI environment required). Auto-accepts p
 ## Setup Instructions (WSL/Ubuntu):
 Chrome can be installed with:
 ```bash
-sudo apt install google-chrome-stable
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
 ```
 
-ChromeDriver setup (not necessary as it will be installed automatically if not detected):
+ChromeDriver setup (not necessary as it will be installed automatically if not detected, just improved load time slightly):
 ```bash
 # Move chromedriver into PATH
 sudo mv chromedriver /usr/local/bin

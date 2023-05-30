@@ -13,6 +13,8 @@ import logging
 import sys
 from getpass import getpass
 
+load_dotenv()
+
 logger = logging.getLogger()
 logger.setLevel(20)
 if len(sys.argv) > 1 and sys.argv[1] == '-v':
@@ -31,8 +33,7 @@ formatter = logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s')
 file_log_handler.setFormatter(formatter)
 stdout_log_handler.setFormatter(formatter)
 
-load_dotenv()
-username = os.getenv('username')
+
 
 options = ChromeOptions()
 options.add_argument('--headless=new')
@@ -63,6 +64,9 @@ def login():
     except:
         try:
             # Initial login process
+            username = os.getenv('username')
+            if username is None:
+                username = input('Username: ')
             WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'username'))).send_keys(username)
             password = os.getenv('password')
             if password is None:
