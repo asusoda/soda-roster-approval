@@ -13,18 +13,20 @@ import logging
 import sys
 from getpass import getpass
 
+from urllib.parse import unquote
+
 load_dotenv()
 
-logger = logging.getLogger()
-logger.setLevel(20)
+logger = logging.getLogger('engage-roster-approver')
+logger.setLevel(10)
+file_log_handler = logging.FileHandler('approved_members.log')
+file_log_handler.setLevel(20)
+stdout_log_handler = logging.StreamHandler(sys.stdout)
 if len(sys.argv) > 1 and sys.argv[1] == '-v':
     print('Verbose mode enabled')
-    verbose = True
+    stdout_log_handler.setLevel(10)
 else:
-    verbose = False
-
-file_log_handler = logging.FileHandler('approved_members.log')
-stdout_log_handler = logging.StreamHandler(sys.stdout)
+    stdout_log_handler.setLevel(20)
 logger.addHandler(file_log_handler)
 logger.addHandler(stdout_log_handler)
 
@@ -33,11 +35,13 @@ formatter = logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s')
 file_log_handler.setFormatter(formatter)
 stdout_log_handler.setFormatter(formatter)
 
-
-
 options = ChromeOptions()
-options.add_argument('--headless=new')
-options.add_argument(f'--user-data-dir={os.getcwd()}/userdata')
+options.arguments.extend([
+    '--headless=new',
+    '--no-sandbox',
+    '--disable-dev-shm-usage',
+    f'--user-data-dir={os.getcwd()}/userdata'
+])
 driver = webdriver.Chrome(options=options)
 
 def accept_members(table):
@@ -51,7 +55,7 @@ def accept_members(table):
             logger.info(f'Approved "{name}"')
             time.sleep(3)
         except:
-            if verbose: logger.info('No requests, skipping...')
+            logger.debug('No requests, skipping...')
             break
 
 
@@ -59,7 +63,8 @@ def login():
     try:
         driver.get('https://asu.campuslabs.com/engage/actioncenter/organization/soda/roster/Roster/prospective')
         WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="prospective"]/div/table/tbody')))
-        logger.info(f'Already logged in as {username}, skipping login process...')
+        name = unquote(driver.execute_script('return SVG.CurrentMember.Name'))
+        logger.info(f'Already logged in as {name}, skipping login process...')
         return True
     except:
         try:
@@ -84,6 +89,9 @@ def login():
             logger.info(f'Logged in as {username}, sending Duo 2FA push...')
             return True
         except:
+            logger.info(f'Failed log in, retrying...')
+            with open('check.html', 'w') as file:
+                file.write(driver.page_source)
             return False
 
 def main():
@@ -95,17 +103,18 @@ def main():
             while True:
                 accept_members(table)
                 time.sleep(60)
-                if verbose: logger.info(f'Refreshing...')
+                logger.debug(f'Refreshing...')
                 driver.refresh()
                 table = WebDriverWait(driver, 60).until(
                     EC.visibility_of_element_located((By.XPATH, '//*[@id="prospective"]/div/table/tbody')))
         except Exception as e:
-            logger.error(e)
+            print(type(e))
             logger.error(f'Crashed...')
-            main()
-    else:
-        main()
+    main()
 
 if __name__ == "__main__":
-    main()
-    # driver.quit()
+    try:
+        main()
+    except:
+        pass
+    driver.quit()
