@@ -3,10 +3,11 @@ Selenium script that runs headless (no GUI environment required).
 Auto-accepts prospective members on SoDA's SunDevilSync (Campus Labs Engage) Organization.
 
 ## Dependencies
+- [Google Chrome](https://www.google.com/chrome)
+- [ChromeDriver](https://chromedriver.chromium.org/downloads)
+- Python 3
 - [selenium](https://pypi.org/project/selenium/)
 - [python-dotenv](https://pypi.org/project/python-dotenv/)
-- [ChromeDriver](https://chromedriver.chromium.org/downloads) 
-- [Google Chrome](https://www.google.com/chrome)
 > Google Chrome and ChromeDriver versions need to match
 
 ## Setup Instructions:
