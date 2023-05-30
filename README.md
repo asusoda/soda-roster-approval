@@ -6,11 +6,12 @@
 > Google Chrome and ChromeDriver versions need to match
 
 ## Setup Instructions (WSL/Ubuntu):
-Chrome can alternatively be installed with:
+Chrome can be installed with:
 ```bash
 sudo apt install google-chrome-stable
 ```
 
+ChromeDriver setup (not necessary as it will be installed automatically if not detected):
 ```bash
 # Move chromedriver into PATH
 sudo mv chromedriver /usr/local/bin
