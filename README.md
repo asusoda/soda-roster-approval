@@ -39,3 +39,5 @@ Obviously, don't do this on a machine other people might have access to.
 python3 engage-roster-approver.py
 ```
 > Add `-v` arg for debug messages (e.g. when page refreshes are occurring)
+
+Logs are written to `approved_members.log`
