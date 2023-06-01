@@ -58,6 +58,12 @@ def accept_members(table):
             logger.debug('No requests, skipping...')
             break
 
+username = os.getenv('username')
+if username is None:
+    username = input('Username: ')
+password = os.getenv('password')
+if password is None:
+    password = getpass('Password: ')
 
 def login():
     try:
@@ -68,26 +74,21 @@ def login():
         return True
     except:
         try:
-            # Initial login process
-            username = os.getenv('username')
-            if username is None:
-                username = input('Username: ')
-            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'username'))).send_keys(username)
-            password = os.getenv('password')
-            if password is None:
-                password = getpass('Password: ')
-            driver.find_element(By.ID, 'password').send_keys(password)
-            driver.find_element(By.NAME, 'submit').click()
-
-            # Duo 2FA
-            WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="duo_iframe"]')))
-            
-            # Enable "Remember me for 7 days" checkbox
-            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="login-form"]/div[2]/div/label/input'))).click()
-            
-            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[normalize-space()="Send Me a Push"]'))).click()
-            logger.info(f'Logged in as {username}, sending Duo 2FA push...')
-            return True
+            try:
+                # Initial login process
+                WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, 'username'))).send_keys(username)
+                driver.find_element(By.ID, 'password').send_keys(password)
+                driver.find_element(By.NAME, 'submit').click()
+            finally:
+                # Duo 2FA
+                WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="duo_iframe"]')))
+                
+                # Enable "Remember me for 7 days" checkbox
+                WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="login-form"]/div[2]/div/label/input'))).click()
+                
+                WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[normalize-space()="Send Me a Push"]'))).click()
+                logger.info(f'Logged in as {username}, sending Duo 2FA push...')
+                return True
         except:
             logger.info(f'Failed log in, retrying...')
             with open('check.html', 'w') as file:
