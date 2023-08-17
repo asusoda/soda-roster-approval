@@ -22,11 +22,11 @@ logger.setLevel(10)
 file_log_handler = logging.FileHandler('approved_members.log')
 file_log_handler.setLevel(20)
 stdout_log_handler = logging.StreamHandler(sys.stdout)
-if len(sys.argv) > 1 and sys.argv[1] == '-v':
-    print('Verbose mode enabled')
-    stdout_log_handler.setLevel(10)
-else:
-    stdout_log_handler.setLevel(20)
+# if len(sys.argv) > 1 and sys.argv[1] == '-v':
+print('Verbose mode enabled')
+stdout_log_handler.setLevel(10)
+# else:
+    # stdout_log_handler.setLevel(20)
 logger.addHandler(file_log_handler)
 logger.addHandler(stdout_log_handler)
 
@@ -42,19 +42,14 @@ options.arguments.extend([
 ])
 driver = webdriver.Chrome(options=options)
 
-def accept_members(table):
-    # Retrieve prospective members
-    members = table.find_elements(By.TAG_NAME, 'tr')
-    for member in members:
-        # Click 'APPROVE' button
-        try:
-            name = member.find_element(By.XPATH, 'td[2]/span[1]').text
-            member.find_element(By.XPATH, 'td[4]/button[1]').click()
-            logger.info(f'Approved "{name}"')
-            time.sleep(3)
-        except:
-            logger.debug('No requests, skipping...')
-            break
+def accept_member(member: WebElement):
+    # Click 'APPROVE' button
+    name = member.find_element(By.XPATH, 'td[2]').text
+    button: WebElement = member.find_element(By.XPATH, 'td[4]/button[1]')
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(button))
+    button.click()
+    logger.info(f'Approved "{name}"')
+    time.sleep(3)
 
 username = os.getenv('username')
 if username is None:
@@ -104,10 +99,15 @@ def main():
                 EC.visibility_of_element_located((By.XPATH, '//*[@id="prospective"]/div/table/tbody')))
             logger.info('Authenticated, proceeding to Engage')
             while True:
-                accept_members(table)
-                time.sleep(60)
-                logger.debug(f'Refreshing...')
-                driver.refresh()
+                try:
+                    # Retrieve a prospective member
+                    member = table.find_element(By.TAG_NAME, 'tr')
+                    accept_member(member)
+                except:
+                    logger.debug('No requests, skipping...')
+                    time.sleep(60)
+                    logger.debug(f'Refreshing...')
+                    driver.refresh()
                 table = WebDriverWait(driver, 60).until(
                     EC.visibility_of_element_located((By.XPATH, '//*[@id="prospective"]/div/table/tbody')))
         except Exception as e:
