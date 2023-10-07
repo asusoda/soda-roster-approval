@@ -57,6 +57,9 @@ if username is None:
 password = os.getenv('password')
 if password is None:
     password = getpass('Password: ')
+prospective_url = os.getenv('prospective_url')
+if prospective_url is None:
+    prospective_url = input('Prospective URL: ')
 
 def login():
     try:
