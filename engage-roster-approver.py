@@ -63,7 +63,7 @@ if prospective_url is None:
 
 def login():
     try:
-        driver.get('https://asu.campuslabs.com/engage/actioncenter/organization/soda/roster/Roster/prospective')
+        driver.get(prospective_url)
         WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="prospective"]/div/table/tbody')))
         name = unquote(driver.execute_script('return SVG.CurrentMember.Name'))
         logger.info(f'Already logged in as {name}, skipping login process...')
@@ -77,17 +77,17 @@ def login():
                 driver.find_element(By.ID, 'password').send_keys(password)
                 driver.find_element(By.NAME, 'submit').click()
             finally:
-                # Duo 2FA
-                WebDriverWait(driver, 20).until(
-                    EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="duo_iframe"]')))
+                # # Duo 2FA
+                # WebDriverWait(driver, 20).until(
+                #     EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="duo_iframe"]')))
                 
-                # Enable "Remember me for 7 days" checkbox
-                WebDriverWait(driver, 20).until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="login-form"]/div[2]/div/label/input'))).click()
+                # # Enable "Remember me for 7 days" checkbox
+                # WebDriverWait(driver, 20).until(
+                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="login-form"]/div[2]/div/label/input'))).click()
                 
-                WebDriverWait(driver, 20).until(
-                    EC.element_to_be_clickable((By.XPATH, '//button[normalize-space()="Send Me a Push"]'))).click()
                 logger.info(f'Logged in as {username}, sending Duo 2FA push...')
+                WebDriverWait(driver, 20).until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="trust-browser-button"]'))).click()
                 return True
         except:
             logger.info(f'Failed log in, retrying...')
